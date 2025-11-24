@@ -1,0 +1,116 @@
+"use client"
+
+import * as React from "react"
+import {
+    CreditCard,
+    LayoutDashboard,
+    LogOut,
+    Settings,
+    ShoppingBasket,
+    Users,
+} from "lucide-react"
+import { useRouter } from "next/navigation"
+
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarRail,
+} from "@/components/ui/sidebar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+const data = {
+    user: {
+        name: "Admin User",
+        email: "admin@cafe.com",
+        avatar: "",
+    },
+    navMain: [
+        {
+            title: "Dashboard",
+            url: "/admin",
+            icon: LayoutDashboard,
+        },
+        {
+            title: "RFID Management",
+            url: "/admin/rfid",
+            icon: CreditCard,
+        },
+        {
+            title: "POS System",
+            url: "/pos",
+            icon: ShoppingBasket,
+        },
+        {
+            title: "Settings",
+            url: "/settings",
+            icon: Settings,
+        },
+    ],
+}
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const router = useRouter()
+
+    return (
+        <Sidebar collapsible="icon" {...props}>
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton size="lg" asChild>
+                            <a href="#">
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                                    <ShoppingBasket className="size-4" />
+                                </div>
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                    <span className="truncate font-semibold">Cafe Manager</span>
+                                    <span className="truncate text-xs">Enterprise</span>
+                                </div>
+                            </a>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
+            <SidebarContent>
+                <SidebarMenu>
+                    {data.navMain.map((item) => (
+                        <SidebarMenuItem key={item.title}>
+                            <SidebarMenuButton asChild tooltip={item.title}>
+                                <a href={item.url}>
+                                    <item.icon />
+                                    <span>{item.title}</span>
+                                </a>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
+                </SidebarMenu>
+            </SidebarContent>
+            <SidebarFooter>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            size="lg"
+                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                            onClick={() => router.push("/login")}
+                        >
+                            <Avatar className="h-8 w-8 rounded-lg">
+                                <AvatarImage src={data.user.avatar} alt={data.user.name} />
+                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                            </Avatar>
+                            <div className="grid flex-1 text-left text-sm leading-tight">
+                                <span className="truncate font-semibold">{data.user.name}</span>
+                                <span className="truncate text-xs">{data.user.email}</span>
+                            </div>
+                            <LogOut className="ml-auto size-4" />
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
+            <SidebarRail />
+        </Sidebar>
+    )
+}
