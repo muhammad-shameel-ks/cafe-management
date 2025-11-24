@@ -5,7 +5,6 @@ import {
     CreditCard,
     LayoutDashboard,
     LogOut,
-    Settings,
     ShoppingBasket,
     Users,
 } from "lucide-react"
@@ -44,11 +43,6 @@ const data = {
             title: "POS System",
             url: "/pos",
             icon: ShoppingBasket,
-        },
-        {
-            title: "Settings",
-            url: "/settings",
-            icon: Settings,
         },
     ],
 }
