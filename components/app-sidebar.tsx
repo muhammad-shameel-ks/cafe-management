@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import {
-    CreditCard,
     LayoutDashboard,
     LogOut,
     ShoppingBasket,
@@ -38,11 +37,6 @@ const data = {
             title: "Users",
             url: "/admin/users",
             icon: Users,
-        },
-        {
-            title: "RFID Management",
-            url: "/admin/rfid",
-            icon: CreditCard,
         },
         {
             title: "POS System",
