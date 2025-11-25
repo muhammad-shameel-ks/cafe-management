@@ -35,6 +35,11 @@ const data = {
             icon: LayoutDashboard,
         },
         {
+            title: "Users",
+            url: "/admin/users",
+            icon: Users,
+        },
+        {
             title: "RFID Management",
             url: "/admin/rfid",
             icon: CreditCard,

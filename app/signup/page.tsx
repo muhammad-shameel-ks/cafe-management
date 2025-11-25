@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Coffee, LogIn } from "lucide-react"
+import { Coffee, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,42 +11,43 @@ import { toast } from "sonner"
 import { createClient } from "@/lib/supabase"
 import Link from "next/link"
 
-export default function LoginPage() {
+export default function SignupPage() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+        fullName: "",
+        phoneNumber: "",
+    })
 
     const supabase = createClient()
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.id]: e.target.value })
+    }
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
         setIsLoading(true)
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
+            const { error } = await supabase.auth.signUp({
+                email: formData.email,
+                password: formData.password,
+                options: {
+                    data: {
+                        full_name: formData.fullName,
+                        phone_number: formData.phoneNumber,
+                    },
+                },
             })
 
             if (error) {
                 toast.error(error.message)
             } else {
-                toast.success("Logged in successfully")
-
-                // Check if user is admin (simple check for now, can be robustified)
-                // For now, we'll fetch the profile to see the role
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', data.user.id)
-                    .single()
-
-                if (profile?.role === 'admin') {
-                    router.push("/admin")
-                } else {
-                    router.push("/dashboard") // We need to create this or redirect to home
-                }
+                toast.success("Account created successfully! Please sign in.")
+                router.push("/login")
             }
         } catch (error) {
             toast.error("An unexpected error occurred")
@@ -64,47 +65,64 @@ export default function LoginPage() {
                             <Coffee className="w-10 h-10" />
                         </div>
                     </div>
-                    <CardTitle className="text-2xl font-bold text-primary">Cafe Manager</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-primary">Create Account</CardTitle>
                     <CardDescription>
-                        Enter your credentials to access the system
+                        Join Cafe Manager to get your prepaid card
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={onSubmit} className="space-y-4">
                         <div className="space-y-2">
+                            <Label htmlFor="fullName">Full Name</Label>
+                            <Input
+                                id="fullName"
+                                placeholder="John Doe"
+                                required
+                                className="border-primary/20 focus-visible:ring-primary"
+                                value={formData.fullName}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="phoneNumber">Phone Number</Label>
+                            <Input
+                                id="phoneNumber"
+                                placeholder="+91 9876543210"
+                                required
+                                className="border-primary/20 focus-visible:ring-primary"
+                                value={formData.phoneNumber}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="admin@cafe.com"
+                                placeholder="user@example.com"
                                 required
                                 className="border-primary/20 focus-visible:ring-primary"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={formData.email}
+                                onChange={handleChange}
                             />
                         </div>
                         <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="password">Password</Label>
-                                <a href="#" className="text-sm text-primary hover:underline">
-                                    Forgot password?
-                                </a>
-                            </div>
+                            <Label htmlFor="password">Password</Label>
                             <Input
                                 id="password"
                                 type="password"
                                 required
                                 className="border-primary/20 focus-visible:ring-primary"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={formData.password}
+                                onChange={handleChange}
                             />
                         </div>
                         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
                             {isLoading ? (
-                                "Signing in..."
+                                "Creating Account..."
                             ) : (
                                 <>
-                                    <LogIn className="mr-2 h-4 w-4" /> Sign in
+                                    <UserPlus className="mr-2 h-4 w-4" /> Create Account
                                 </>
                             )}
                         </Button>
@@ -112,13 +130,10 @@ export default function LoginPage() {
                 </CardContent>
                 <CardFooter className="flex flex-col gap-2 text-center text-sm text-muted-foreground justify-center">
                     <div>
-                        Don't have an account?{" "}
-                        <Link href="/signup" className="text-primary hover:underline font-medium">
-                            Create Account
+                        Already have an account?{" "}
+                        <Link href="/login" className="text-primary hover:underline font-medium">
+                            Sign in
                         </Link>
-                    </div>
-                    <div className="text-xs opacity-70">
-                        Protected by RFID Security System
                     </div>
                 </CardFooter>
             </Card>
